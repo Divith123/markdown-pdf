@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FontPicker } from "@/components/editor/font-picker";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDocumentStore } from "@/stores/document-store";
-import { availableFonts, fontWeightLabels, type FontWeight } from "@/types/typography";
+import { fontWeightLabels, type FontWeight } from "@/types/typography";
 import { X, Check, Type, Space, AlignVerticalSpaceAround } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -94,40 +95,31 @@ export function MobileTypographyPanel({ isOpen, onClose }: MobileTypographyPanel
 
           {/* Controls */}
           <div className="flex flex-col gap-8 px-6">
-            {/* Font Family */}
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-baseline">
-                <label className="text-sm font-bold">Font Family</label>
+            {/* Font Families */}
+            <div className="flex flex-col gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-bold">Heading Font</label>
+                <FontPicker
+                  value={localTypography.headingFont.family}
+                  onValueChange={(family) =>
+                    setLocalTypography({
+                      ...localTypography,
+                      headingFont: { ...localTypography.headingFont, family, source: "google" },
+                    })
+                  }
+                />
               </div>
-              <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide snap-x">
-                {availableFonts.map((font) => (
-                  <button
-                    key={font.family}
-                    onClick={() =>
-                      setLocalTypography({
-                        ...localTypography,
-                        bodyFont: { ...localTypography.bodyFont, family: font.family },
-                        headingFont: { ...localTypography.headingFont, family: font.family },
-                      })
-                    }
-                    className={cn(
-                      "snap-start flex-none flex flex-col items-start gap-2 p-3 w-32 rounded-xl border-2 transition-all",
-                      localTypography.bodyFont.family === font.family
-                        ? "border-primary bg-primary/5"
-                        : "border-border bg-card hover:border-primary/50"
-                    )}
-                  >
-                    {localTypography.bodyFont.family === font.family && (
-                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
-                    )}
-                    <span className="text-3xl" style={{ fontFamily: font.family }}>
-                      Aa
-                    </span>
-                    <span className="text-xs font-bold truncate w-full text-left">
-                      {font.name}
-                    </span>
-                  </button>
-                ))}
+              <div className="space-y-2">
+                <label className="text-sm font-bold">Body Font</label>
+                <FontPicker
+                  value={localTypography.bodyFont.family}
+                  onValueChange={(family) =>
+                    setLocalTypography({
+                      ...localTypography,
+                      bodyFont: { ...localTypography.bodyFont, family, source: "google" },
+                    })
+                  }
+                />
               </div>
             </div>
 

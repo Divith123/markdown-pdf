@@ -15,6 +15,7 @@ import {
 import { EditorCanvas } from "@/components/editor/editor-canvas";
 import { ModeSwitcher } from "@/components/editor/mode-switcher";
 import { FormattingToolbar } from "@/components/toolbar/formatting-toolbar";
+import { StatusBar } from "@/components/editor/status-bar";
 import { ExportPanel } from "@/components/panels/export-panel";
 import { TypographyPanel } from "@/components/panels/typography-panel";
 import { ThemePanel } from "@/components/panels/theme-panel";
@@ -42,11 +43,13 @@ import {
   Menu,
   Settings2,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function EditorPage() {
   // Desktop state
   const [showSidebar, setShowSidebar] = useState(true);
   const [activePanel, setActivePanel] = useState<string>("typography");
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   // Mobile panel states
   const [showMobileExport, setShowMobileExport] = useState(false);
@@ -139,70 +142,74 @@ export default function EditorPage() {
       <MobileHeader onExportClick={() => setShowMobileExport(true)} />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex h-14 items-center justify-between border-b px-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-lg">Markdown Pro</span>
+      {!isFocusMode && (
+        <header className="hidden md:flex h-14 items-center justify-between border-b px-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <FileText className="h-6 w-6 text-primary" />
+              <span className="font-semibold text-lg">Markdown Pro</span>
+            </div>
+            <Separator orientation="vertical" className="h-6" />
+            <Input
+              value={metadata.title}
+              onChange={(e) => setMetadata({ title: e.target.value })}
+              className="h-8 w-64 border-none bg-transparent px-2 text-sm font-medium focus-visible:ring-1"
+              placeholder="Untitled Document"
+            />
           </div>
-          <Separator orientation="vertical" className="h-6" />
-          <Input
-            value={metadata.title}
-            onChange={(e) => setMetadata({ title: e.target.value })}
-            className="h-8 w-64 border-none bg-transparent px-2 text-sm font-medium focus-visible:ring-1"
-            placeholder="Untitled Document"
-          />
-        </div>
 
-        <div className="flex items-center gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  {isSaving ? (
-                    <>
-                      <Cloud className="h-4 w-4 animate-pulse" />
-                      Saving...
-                    </>
-                  ) : lastSaved ? (
-                    <>
-                      <Cloud className="h-4 w-4" />
-                      {formatLastSaved()}
-                    </>
-                  ) : (
-                    <>
-                      <CloudOff className="h-4 w-4" />
-                      Not saved
-                    </>
-                  )}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{autoSaveEnabled ? "Auto-save enabled" : "Auto-save disabled"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    {isSaving ? (
+                      <>
+                        <Cloud className="h-4 w-4 animate-pulse" />
+                        Saving...
+                      </>
+                    ) : lastSaved ? (
+                      <>
+                        <Cloud className="h-4 w-4" />
+                        {formatLastSaved()}
+                      </>
+                    ) : (
+                      <>
+                        <CloudOff className="h-4 w-4" />
+                        Not saved
+                      </>
+                    )}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{autoSaveEnabled ? "Auto-save enabled" : "Auto-save disabled"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
-          <Separator orientation="vertical" className="h-6" />
-          <ModeSwitcher />
-          <Separator orientation="vertical" className="h-6" />
-          <ExportPanel />
-          <Button variant="ghost" size="icon" onClick={() => setShowSidebar(!showSidebar)} className="h-8 w-8">
-            {showSidebar ? <PanelRightClose className="h-4 w-4" /> : <PanelRight className="h-4 w-4" />}
-          </Button>
-        </div>
-      </header>
+            <Separator orientation="vertical" className="h-6" />
+            <ModeSwitcher />
+            <Separator orientation="vertical" className="h-6" />
+            <ExportPanel />
+            <Button variant="ghost" size="icon" onClick={() => setShowSidebar(!showSidebar)} className="h-8 w-8">
+              {showSidebar ? <PanelRightClose className="h-4 w-4" /> : <PanelRight className="h-4 w-4" />}
+            </Button>
+          </div>
+        </header>
+      )}
 
       {/* Desktop Toolbar */}
-      <div className="hidden md:flex items-center justify-between border-b px-4 py-2">
-        <FormattingToolbar />
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => resetDocument()} className="gap-1.5 text-xs">
-            <FilePlus className="h-3.5 w-3.5" />
-            New
-          </Button>
+      {!isFocusMode && (
+        <div className="hidden md:flex items-center justify-between border-b px-4 py-2">
+          <FormattingToolbar />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => resetDocument()} className="gap-1.5 text-xs">
+              <FilePlus className="h-3.5 w-3.5" />
+              New
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
@@ -217,13 +224,18 @@ export default function EditorPage() {
               <span className="text-xs font-semibold text-muted-foreground tracking-wide">Live Preview</span>
             </div>
           </div>
-          <div className="mx-auto max-w-4xl">
-            <EditorCanvas className="min-h-[calc(100vh-200px)] bg-background rounded-xl shadow-lg border p-6 md:p-12" />
+          <div className={cn("mx-auto max-w-4xl transition-all duration-500", isFocusMode && "max-w-3xl")}>
+            <EditorCanvas 
+              className={cn(
+                "min-h-[calc(100vh-200px)] bg-background rounded-xl shadow-lg border p-6 md:p-12 transition-all duration-500",
+                isFocusMode && "min-h-screen border-none shadow-none rounded-none py-12"
+              )} 
+            />
           </div>
         </main>
 
         {/* Desktop Sidebar */}
-        {showSidebar && (
+        {showSidebar && !isFocusMode && (
           <aside className="hidden md:block w-80 border-l bg-background">
             <Tabs value={activePanel} onValueChange={setActivePanel} className="h-full flex flex-col">
               <TabsList className="grid w-full grid-cols-3 rounded-none border-b">
@@ -250,10 +262,22 @@ export default function EditorPage() {
         )}
       </div>
 
+      {/* Desktop Status Bar */}
+      <div className="hidden md:block">
+        <StatusBar
+          lastSaved={lastSaved}
+          isSaving={isSaving}
+          onToggleFocus={() => setIsFocusMode(!isFocusMode)}
+          isFocusMode={isFocusMode}
+        />
+      </div>
+
       {/* Mobile Floating Menu Button */}
-      <button onClick={() => setShowMobileMenu(true)} className="fixed bottom-24 right-4 z-40 md:hidden p-4 bg-primary text-primary-foreground rounded-full shadow-lg">
-        <Menu className="h-6 w-6" />
-      </button>
+      {!isFocusMode && (
+        <button onClick={() => setShowMobileMenu(true)} className="fixed bottom-24 right-4 z-40 md:hidden p-4 bg-primary text-primary-foreground rounded-full shadow-lg">
+          <Menu className="h-6 w-6" />
+        </button>
+      )}
 
       {/* Mobile Components */}
       <MobileToolbar />
@@ -261,17 +285,6 @@ export default function EditorPage() {
       <MobileExportPanel isOpen={showMobileExport} onClose={() => setShowMobileExport(false)} />
       <MobileTypographyPanel isOpen={showMobileTypography} onClose={() => setShowMobileTypography(false)} />
       <MobileSettingsPanel isOpen={showMobileSettings} onClose={() => setShowMobileSettings(false)} />
-
-      {/* Desktop Status Bar */}
-      <footer className="hidden md:flex h-6 items-center justify-between border-t bg-muted/50 px-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-4">
-          <span>{isReady ? "Ready" : "Loading..."}</span>
-          <span>{autoSaveEnabled ? "Auto-save on" : "Auto-save off"}</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span>v{metadata.version}</span>
-        </div>
-      </footer>
     </div>
   );
 }

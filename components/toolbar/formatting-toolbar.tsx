@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -26,19 +28,41 @@ import {
   List,
   ListOrdered,
   ListTodo,
-  Quote,
   AlignLeft,
   AlignCenter,
   AlignRight,
   AlignJustify,
-  Link,
-  Image,
+  Link as LinkIcon,
+  Image as ImageIcon,
   Table,
   Minus,
   Undo,
   Redo,
+  Subscript,
+  Superscript,
+  Smile,
+  Hash,
+  Quote,
+  Sigma,
+  GitBranch,
+  Code2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Import component dialogs
+import {
+  EmojiPicker,
+  ColorPicker,
+  TableDialog,
+  ImageDialog,
+  LinkDialog,
+  CodeBlockDialog,
+  MathDialog,
+  DiagramDialog,
+  BlockquoteDialog,
+  HorizontalRuleDialog,
+  SpecialCharactersPicker,
+} from "@/components/editor";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -149,6 +173,24 @@ export function FormattingToolbar() {
           pressed={isActive("highlight")}
           onPressedChange={() => editor.chain().focus().toggleHighlight().run()}
         />
+        
+        {/* Subscript/Superscript */}
+        <ToolbarToggle
+          icon={<Subscript className="h-4 w-4" />}
+          tooltip="Subscript"
+          pressed={isActive("subscript")}
+          onPressedChange={() => editor.chain().focus().toggleSubscript().run()}
+        />
+        <ToolbarToggle
+          icon={<Superscript className="h-4 w-4" />}
+          tooltip="Superscript"
+          pressed={isActive("superscript")}
+          onPressedChange={() => editor.chain().focus().toggleSuperscript().run()}
+        />
+        
+        {/* Color Pickers */}
+        <ColorPicker type="text" />
+        <ColorPicker type="highlight" />
 
         <Separator orientation="vertical" className="mx-1 h-6" />
 
@@ -203,30 +245,75 @@ export function FormattingToolbar() {
         <Separator orientation="vertical" className="mx-1 h-6" />
 
         {/* Block Elements */}
-        <ToolbarToggle
-          icon={<Quote className="h-4 w-4" />}
-          tooltip="Blockquote"
-          pressed={isActive("blockquote")}
-          onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
-        />
-        <ToolbarButton
-          icon={<Minus className="h-4 w-4" />}
-          tooltip="Horizontal Rule"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        />
-        <ToolbarButton
-          icon={<Table className="h-4 w-4" />}
-          tooltip="Insert Table"
-          onClick={() =>
-            editor
-              .chain()
-              .focus()
-              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-              .run()
-          }
-        />
+        <BlockquoteDialog />
+        <HorizontalRuleDialog />
+        <TableDialog />
+        
+        <Separator orientation="vertical" className="mx-1 h-6" />
+        
+        {/* Insert */}
+        <LinkToolbarButton />
+        <ImageToolbarButton />
+        <CodeBlockDialog />
+        <EmojiPicker />
+        <SpecialCharactersPicker />
+        
+        <Separator orientation="vertical" className="mx-1 h-6" />
+        
+        {/* Advanced Insert */}
+        <MathDialog />
+        <DiagramDialog />
       </div>
     </TooltipProvider>
+  );
+}
+
+// Wrapper components for dialogs with open/close state
+function LinkToolbarButton() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => setOpen(true)}
+          >
+            <LinkIcon className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p>Insert Link</p>
+        </TooltipContent>
+      </Tooltip>
+      <LinkDialog open={open} onOpenChange={setOpen} />
+    </>
+  );
+}
+
+function ImageToolbarButton() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => setOpen(true)}
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p>Insert Image</p>
+        </TooltipContent>
+      </Tooltip>
+      <ImageDialog open={open} onOpenChange={setOpen} />
+    </>
   );
 }
 

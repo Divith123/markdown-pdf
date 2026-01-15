@@ -16,13 +16,53 @@ import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
+import { CharacterCount } from "@tiptap/extension-character-count";
+import { Link } from "@tiptap/extension-link";
+import { Image } from "@tiptap/extension-image";
 import { common, createLowlight } from "lowlight";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import markdownit from "markdown-it";
 
-import { FontSize, LineHeight, TextAlign } from "@/lib/editor/extensions";
+import { 
+  FontSize, 
+  LineHeight, 
+  TextAlign,
+  // Text Formatting
+  Subscript,
+  Superscript,
+  SmallCaps,
+  TextTransform,
+  HighlightColor,
+  // Blocks
+  Callout,
+  PageBreak,
+  // Media
+  Youtube,
+  Video,
+  Audio,
+  // Commands
+  SlashCommands,
+  // Reading modes
+  FocusMode,
+  TypewriterMode,
+  ReadingMode,
+  // Advanced editing
+  FootnoteReference,
+  FootnoteContent,
+  Comment,
+  SmartTypography,
+  // Table enhancements
+  CollapsibleBlock,
+  CollapsibleSummary,
+  CollapsibleContent,
+  StyledHorizontalRule,
+  // Typography layout
+  DropCap,
+  Columns,
+  PrintStyles,
+} from "@/lib/editor/extensions";
 import { useEditorStore } from "@/stores/editor-store";
 import { useDocumentStore } from "@/stores/document-store";
 import { cn } from "@/lib/utils";
@@ -160,6 +200,53 @@ export function EditorCanvas({ className, onReady }: EditorCanvasProps) {
       FontSize,
       LineHeight,
       TextAlign,
+      CharacterCount,
+      // Link and Image
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "text-primary underline cursor-pointer",
+        },
+      }),
+      Image.configure({
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "rounded-lg max-w-full",
+        },
+      }),
+      // Text Formatting Extensions
+      Subscript,
+      Superscript,
+      SmallCaps,
+      TextTransform,
+      HighlightColor,
+      // Block Extensions
+      Callout,
+      PageBreak,
+      // Media Extensions
+      Youtube,
+      Video,
+      Audio,
+      // Slash Commands
+      SlashCommands,
+      // Reading & Focus Modes
+      FocusMode,
+      TypewriterMode,
+      ReadingMode,
+      // Advanced Editing
+      FootnoteReference,
+      FootnoteContent,
+      Comment,
+      SmartTypography,
+      // Collapsible Blocks
+      CollapsibleBlock,
+      CollapsibleSummary,
+      CollapsibleContent,
+      StyledHorizontalRule,
+      // Typography & Layout
+      DropCap,
+      Columns,
+      PrintStyles,
     ],
     content,
     editorProps: {

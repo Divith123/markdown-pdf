@@ -109,20 +109,3 @@ export const fontWeightLabels: Record<FontWeight, string> = {
   900: "Black",
 };
 
-// Available fonts
-export interface AvailableFont {
-  family: string;
-  name: string;
-  category: "serif" | "sans-serif" | "monospace" | "display";
-}
-
-export const availableFonts: AvailableFont[] = [
-  { family: "Inter", name: "Inter", category: "sans-serif" },
-  { family: "Merriweather", name: "Merriweather", category: "serif" },
-  { family: "Roboto", name: "Roboto", category: "sans-serif" },
-  { family: "Playfair Display", name: "Playfair", category: "serif" },
-  { family: "JetBrains Mono", name: "JetBrains Mono", category: "monospace" },
-  { family: "Manrope", name: "Manrope", category: "sans-serif" },
-  { family: "Georgia", name: "Georgia", category: "serif" },
-  { family: "system-ui", name: "System", category: "sans-serif" },
-];
